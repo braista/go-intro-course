@@ -57,4 +57,14 @@ func main() {
 		For example:
 			uint32 = 32 bits unsigned number
 	*/
+
+	/*
+		Memory allocation
+			variable are pointers to a memory location
+			when you create a variable using another one, it make a copy of its value
+			(it DOESN'T point at the same location)
+	*/
+	var original string = "original"
+	copied := original // creates a copy (new memory allocation) of "original" value
+	println(original, copied)
 }
