@@ -32,4 +32,12 @@ func main() {
 	if length := 12; length < 10 {
 		println("this never will run")
 	}
+
+	/*
+		if's brace can't be put on the next line, because ; will be inserted after parentheses
+			if i < f()  // wrong!
+			{           // wrong!
+				g()
+			}
+	*/
 }
