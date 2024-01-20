@@ -30,8 +30,9 @@ func main() {
 			type will be infered from value
 			in this example, assigning the text below as value sets "string" as its type
 	*/
-	text := "this a string value, so 'text' will be type 'string'"
-	println(text)
+	var stringo = "bye"                                            // without type
+	text := "this a string value, so 'text' will be type 'string'" // without var nor type
+	println(stringo, text)
 	logic := true
 	println(logic)                     // inferred as "bool"
 	mileage, company := 80276, "Tesla" // multiple variables declaration
