@@ -22,7 +22,6 @@ func main() {
 	i, err := strconv.Atoi("42b")
 	if err != nil { // checking it error is not nil
 		fmt.Println("couldn't convert:", err)
-		return
 	}
 	fmt.Println(i)
 
@@ -36,6 +35,45 @@ func main() {
 	if err = sendSMS("hello", "user1234"); err != nil {
 		fmt.Println(err)
 	}
+
+	/*
+		Defer
+			used to ensure that a function call is performed later in a program's execution
+			usually for purposes of cleanup
+			(something like finally from java)
+			it's like it gets posponed until program finishes
+
+			you can pass any expression or function invocation
+			it will evaluate at the end
+	*/
+	defer fmt.Println("this block is executed before program closes")
+
+	/*
+		Panic
+			used to throw errors that shouldn't occur during normal operation
+			a common use of panic is to abort a function
+			an error or a message as argument can be passed as argument
+	*/
+	//panic("fatal error lul") commented because crashes the program
+
+	/*
+		Recover
+			makes it possible to recover from a panic
+			it can stop a panic from aborting the program and let it continue instead
+
+			use case example:
+				a server wouldn't want to crash if one client connections gets a critical error
+	*/
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("Recovered. Error:\n", err)
+			// ...
+			// the program will continue here after the panic is recovered
+		}
+	}()
+	// some other code...
+	panic("fatal error lul") // triggers a panic, that will be catch by "recover" above
+	fmt.Println("this code is not executed because of the panic")
 }
 
 // function that can throw an error
