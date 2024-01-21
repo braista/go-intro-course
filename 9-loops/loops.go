@@ -52,4 +52,11 @@ func main() {
 		fmt.Println("infinite loop")
 		break // don't forget break lol
 	}
+
+	// for-each range loop
+	// can be used to iterate arrays, maps, or other structures
+	strings := []string{"el1", "el2", "el3"}
+	for i, s := range strings {
+		fmt.Println(i, s)
+	}
 }
