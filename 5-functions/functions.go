@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"example/go-intro-course/5-functions/variadic"
+	"fmt"
 )
 
 /*
@@ -63,6 +64,25 @@ func divide(dividend, divisor int) (int, error) {
 	return dividend / divisor, nil
 }
 
+/*
+Advanced Functions (High-Order Functions)
+
+	HOC are functions that receive other functions as parameters.
+	They can be called from inside the function body whenever is necessary.
+	The function passed as parameter is called "First-class functions".
+
+	When should I use them?
+		Basically whenever you need to run code in the future
+		- HTTP API handlers
+		- Pub/Sub handlers
+		- Callbacks
+
+	"Currying" is a practice where a function that receives a function returns a new function
+*/
+func hoFunction(num1, num2 int, operation func(num1, num2 int) int) int {
+	return operation(num1, num2)
+}
+
 func main() {
 	result := sub(3, 2) // function invocation
 	println(result)
@@ -84,4 +104,7 @@ func main() {
 
 	// passing arguments to a variadic function
 	variadic.Sum(1, 2, 3, 4) // can pass an undefined number of ints because "..." in its signature
+
+	// calling high-order function
+	fmt.Println("hof operation result:", hoFunction(5, 3, sub)) // we pass "sub" function as parameter
 }
