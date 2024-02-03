@@ -1,8 +1,9 @@
 package main
 
 import (
-	variadicFunctions "example/go-intro-course/5-functions/variadic"
 	"fmt"
+
+	variadicFunctions "github.com/braista/go-intro-course/5-functions/variadic"
 )
 
 /*

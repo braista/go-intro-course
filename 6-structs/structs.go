@@ -1,7 +1,7 @@
 package main
 
 import (
-	privatePackage "example/go-intro-course/6-structs/private" // import alias "privatePackage"
+	privatePackage "github.com/braista/go-intro-course/6-structs/private" // import alias "privatePackage"
 
 	"fmt"
 )
@@ -35,7 +35,6 @@ type Car struct {
 }
 
 func main() {
-	//TODO: structs
 	// struct instantiation
 	myCar := Car{} // attributes are initialized with "zero values" by default
 	fmt.Println(myCar.Make)
