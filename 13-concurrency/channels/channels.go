@@ -77,6 +77,28 @@ func main() {
 	}
 
 	/*
+		Timeouts
+
+			used for programs that connect to external resources or that otherwise
+			need to bound executing time.
+
+			They are implemented using channels, select and the time.After().
+	*/
+	// c1 is buffered with 1 so its non-blocking
+	// common pattern to prevent goroutine leaks in case channel is never read
+	c1 := make(chan string, 1)
+	go func() {
+		time.Sleep(2 * time.Second) // simulating processing time using time.Sleep()
+		c1 <- "result 1"
+	}()
+	select { // use select to read & implement a timeout
+	case res := <-c1:
+		fmt.Println(res)
+	case <-time.After(1 * time.Second): // implementing timeout using time.After()
+		fmt.Println("timeout 1")
+	}
+
+	/*
 		A receive from a nil channel blocks forever
 			var c chan string // c is nil
 			fmt.Println(<-c) 	// blocks
