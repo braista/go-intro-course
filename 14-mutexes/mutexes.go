@@ -30,6 +30,7 @@ func protectedFunction(mutex *sync.Mutex) {
 
 		This helps with performance if we have a read-intensive process.
 */
+// mutex has to be passed as reference
 func rlockProtected(mutex *sync.RWMutex) {
 	mutex.RLock()
 	defer mutex.RUnlock()

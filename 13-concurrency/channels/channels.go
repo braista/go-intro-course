@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"runtime"
 	"time"
 )
 
@@ -57,6 +58,9 @@ func main() {
 	*/
 	buffer := make(chan int, 5) // buffered channels can be created passing limit to make()
 	close(buffer)               // inmediately closed because won't use it
+
+	// getting number of system CPU cores using runtime.NumCPU()
+	fmt.Println("number of CPU cores:", runtime.NumCPU())
 
 	// select
 	// listens to multiple channels and process data in the order it comes through each channel
