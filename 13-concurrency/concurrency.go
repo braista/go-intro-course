@@ -15,8 +15,13 @@ Concurrency
 		Run concurreny.go and check in the console how the code is executed at the same time
 */
 func main() {
-	// go keyword generates a new go routine (something like new Thread() in java)
-	go doSomething()
+	/*
+		Goroutines
+			It is basically a lightweight function executing concurrently with other ones in the
+			same address space.
+			"go" keyword generates a new go routine (something like new Thread() in java)
+	*/
+	go doSomething() // doSomething() runs concurrently; don't wait for it
 	fmt.Println("code below and doSomething() will be executed at the same time")
 	for i := 0; i < 10; i++ {
 		fmt.Println("main code element", i)

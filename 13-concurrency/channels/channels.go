@@ -53,6 +53,7 @@ func main() {
 		Channels can optionally be buffered.
 		Sending on a buffered channel only blocks when the buffer is full.
 		Receiving blocks only when the buffer is empty.
+		Useful for limit throughput.
 	*/
 	buffer := make(chan int, 5) // buffered channels can be created passing limit to make()
 	close(buffer)               // inmediately closed because won't use it
