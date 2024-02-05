@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -32,6 +33,30 @@ func main() {
 
 	// blocks until the WaitGroup counter goes back to 0 -> meaning workers are done
 	wg.Wait()
+
+	atomicCounters()
+}
+
+/*
+Atomic Counters
+
+	using sync/atomic package for atomic variables (thread-safe variables)
+*/
+func atomicCounters() {
+	var ops atomic.Uint64 // declaring atomic counter using sync/atomic module
+	var wg sync.WaitGroup
+
+	for i := 0; i < 50; i++ {
+		wg.Add(i) // incrementing wg counter
+		go func() {
+			for c := 0; c < 1000; c++ {
+				ops.Add(1) // atomically adds (and returns value, but in this example it's not read)
+			}
+			wg.Done() // decrementing wg counter
+		}()
+	}
+	wg.Wait()                       // await wg to finish
+	fmt.Println("ops:", ops.Load()) // atomically loads and return the value
 }
 
 // This function will run in every goroutine
