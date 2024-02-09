@@ -42,6 +42,7 @@ func main() {
 	router.Delete(handlers.UsersPath+"/users/{id}", apiCfg.HandlerDeleteUser)
 	//feeds handler
 	router.Post(handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleAddFeed))
+	router.Get(handlers.FeedsPath, apiCfg.HandleGetFeeds)
 
 	server := &http.Server{
 		Handler: router,

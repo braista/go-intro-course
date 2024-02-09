@@ -40,3 +40,12 @@ func (apiCfg *ApiConfig) HandleAddFeed(w http.ResponseWriter, r *http.Request, u
 	}
 	utils.RespondJSON(w, http.StatusCreated, models.DatabaseFeedToFeed(feed))
 }
+
+func (apiCfg *ApiConfig) HandleGetFeeds(w http.ResponseWriter, r *http.Request) {
+	feeds, err := apiCfg.DB.GetFeeds(r.Context())
+	if err != nil {
+		utils.RespondDBError(w, err)
+		return
+	}
+	utils.RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
+}
