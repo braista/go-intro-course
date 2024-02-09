@@ -18,3 +18,14 @@ func DatabaseUsersToUsers(dbUsers []database.User) []User {
 	}
 	return users
 }
+
+func DatabaseFeedToFeed(dbFeed database.Feed) Feed {
+	return Feed{
+		ID:        dbFeed.ID,
+		CreatedAt: dbFeed.CreatedAt,
+		UpdatedAt: dbFeed.UpdatedAt,
+		Name:      dbFeed.Name,
+		Url:       dbFeed.Url,
+		UserID:    dbFeed.UserID,
+	}
+}
