@@ -13,9 +13,9 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, created_at, updated_at, name)
-VALUES ($1, $2, $3, $4)
-RETURNING id, created_at, updated_at, name
+INSERT INTO users (id, created_at, updated_at, name, api_key)
+VALUES ($1, $2, $3, $4, encode(sha256(random()::text::bytea), 'hex'))
+RETURNING id, created_at, updated_at, name, api_key
 `
 
 type CreateUserParams struct {
@@ -38,13 +38,14 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
+		&i.ApiKey,
 	)
 	return i, err
 }
 
 const deleteUser = `-- name: DeleteUser :execrows
 DELETE FROM users WHERE id = $1
-RETURNING id, created_at, updated_at, name
+RETURNING id, created_at, updated_at, name, api_key
 `
 
 func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) (int64, error) {
@@ -55,8 +56,26 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) (int64, error) {
 	return result.RowsAffected()
 }
 
+const getUser = `-- name: GetUser :one
+SELECT id, created_at, updated_at, name, api_key FROM users
+WHERE id = $1
+`
+
+func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUser, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.ApiKey,
+	)
+	return i, err
+}
+
 const getUsers = `-- name: GetUsers :many
-SELECT id, created_at, updated_at, name FROM users
+SELECT id, created_at, updated_at, name, api_key FROM users
 `
 
 func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
@@ -73,6 +92,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Name,
+			&i.ApiKey,
 		); err != nil {
 			return nil, err
 		}
@@ -91,7 +111,7 @@ const updateUser = `-- name: UpdateUser :execrows
 UPDATE users
 SET name = $2, updated_at = $3
 WHERE id = $1
-RETURNING id, created_at, updated_at, name
+RETURNING id, created_at, updated_at, name, api_key
 `
 
 type UpdateUserParams struct {
