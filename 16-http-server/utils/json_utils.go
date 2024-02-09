@@ -10,7 +10,7 @@ import (
 func RespondJSON(w http.ResponseWriter, code int, payload interface{}) {
 	data, err := json.Marshal(payload)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -32,9 +32,7 @@ func RespondErrorMessage(w http.ResponseWriter, code int, msg string) {
 	}{Error: msg})
 }
 
-func CheckAndRespondError(w http.ResponseWriter, err error) {
-	if err != nil {
-		log.Fatal("There was a server error:", err)
-		RespondErrorMessage(w, http.StatusInternalServerError, fmt.Sprintf("Server error: %s", err))
-	}
+func RespondError(w http.ResponseWriter, err error) {
+	log.Println("There was a server error:", err)
+	RespondErrorMessage(w, http.StatusInternalServerError, fmt.Sprintf("there was a server error: %s", err))
 }

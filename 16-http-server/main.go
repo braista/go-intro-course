@@ -30,12 +30,17 @@ func main() {
 	// reading environment variables using os.Getenv()
 	port := os.Getenv("PORT")
 	log.Println("starting server on port", port)
+
 	router := chi.NewRouter()
+	// health-check handler
 	router.Get("/healthz", handlers.HandleHealthCheck)
-	router.Get("/users", apiCfg.HandlerGetUsers)
-	router.Post("/users", apiCfg.HandlerAddUser)
-	router.Patch("/users/{id}", apiCfg.HandleUpdateUser)
-	router.Delete("/users/{id}", apiCfg.HandlerDeleteUser)
+	// users handler
+	router.Get(handlers.UsersPath, apiCfg.HandlerGetUsers)
+	router.Post(handlers.UsersPath, apiCfg.HandlerAddUser)
+	router.Get(handlers.UsersPath+"/{id}", apiCfg.HandleGetUser)
+	router.Patch(handlers.UsersPath+"/users/{id}", apiCfg.HandleUpdateUser)
+	router.Delete(handlers.UsersPath+"/users/{id}", apiCfg.HandlerDeleteUser)
+
 	server := &http.Server{
 		Handler: router,
 		Addr:    ":" + port,
