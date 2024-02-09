@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -26,24 +25,13 @@ func (apiCfg *ApiConfig) HandlerGetUsers(w http.ResponseWriter, r *http.Request)
 	utils.RespondJSON(w, http.StatusOK, models.DatabaseUsersToUsers(users))
 }
 
-func (apiCfg *ApiConfig) HandleGetUser(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	user, err := apiCfg.DB.GetUser(r.Context(), uuid.MustParse(id))
-	if err != nil {
-		switch err {
-		case sql.ErrNoRows: // checking if not found
-			utils.RespondStatus(w, http.StatusNotFound)
-		default: // default error
-			utils.RespondError(w, err)
-		}
-		return
-	}
+func (apiCfg *ApiConfig) HandleGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
 	utils.RespondJSON(w, http.StatusOK, models.DatabaseUserToUser(user))
 }
 
 func (apiCfg *ApiConfig) HandlerAddUser(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
-	params := parameters{}
+	params := userParameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
 		utils.RespondError(w, err)
@@ -66,7 +54,7 @@ func (apiCfg *ApiConfig) HandleUpdateUser(w http.ResponseWriter, r *http.Request
 	id := chi.URLParam(r, "id")
 	log.Printf("Updating user with id %s", id)
 	decoder := json.NewDecoder(r.Body)
-	params := parameters{}
+	params := userParameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
 		utils.RespondError(w, err)
@@ -104,6 +92,6 @@ func (apiCfg *ApiConfig) HandlerDeleteUser(w http.ResponseWriter, r *http.Reques
 	utils.RespondStatus(w, http.StatusOK)
 }
 
-type parameters struct {
+type userParameters struct {
 	Name string `json:"name"`
 }

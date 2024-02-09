@@ -56,13 +56,31 @@ func (q *Queries) DeleteUser(ctx context.Context, id uuid.UUID) (int64, error) {
 	return result.RowsAffected()
 }
 
-const getUser = `-- name: GetUser :one
+const getCurrentUser = `-- name: GetCurrentUser :one
+SELECT id, created_at, updated_at, name, api_key FROM users
+WHERE api_key = $1
+`
+
+func (q *Queries) GetCurrentUser(ctx context.Context, apiKey string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getCurrentUser, apiKey)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.ApiKey,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
 SELECT id, created_at, updated_at, name, api_key FROM users
 WHERE id = $1
 `
 
-func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, id)
+func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
 		&i.ID,

@@ -1,9 +1,13 @@
 -- name: GetUsers :many
 SELECT * FROM users;
 
--- name: GetUser :one
+-- name: GetUserByID :one
 SELECT * FROM users
 WHERE id = $1;
+
+-- name: GetCurrentUser :one
+SELECT * FROM users
+WHERE api_key = $1;
 
 -- name: CreateUser :one
 INSERT INTO users (id, created_at, updated_at, name, api_key)

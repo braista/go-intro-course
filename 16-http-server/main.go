@@ -37,7 +37,7 @@ func main() {
 	// users handler
 	router.Get(handlers.UsersPath, apiCfg.HandlerGetUsers)
 	router.Post(handlers.UsersPath, apiCfg.HandlerAddUser)
-	router.Get(handlers.UsersPath+"/{id}", apiCfg.HandleGetUser)
+	router.Get(handlers.UsersPath+"/current", apiCfg.MiddlewareAuth(apiCfg.HandleGetUser))
 	router.Patch(handlers.UsersPath+"/users/{id}", apiCfg.HandleUpdateUser)
 	router.Delete(handlers.UsersPath+"/users/{id}", apiCfg.HandlerDeleteUser)
 

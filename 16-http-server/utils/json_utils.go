@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/lib/pq"
 )
 
 func RespondJSON(w http.ResponseWriter, code int, payload interface{}) {
@@ -33,6 +35,20 @@ func RespondErrorMessage(w http.ResponseWriter, code int, msg string) {
 }
 
 func RespondError(w http.ResponseWriter, err error) {
-	log.Println("There was a server error:", err)
+	log.Println("there was a server error:", err)
 	RespondErrorMessage(w, http.StatusInternalServerError, fmt.Sprintf("there was a server error: %s", err))
+}
+
+func RespondDBError(w http.ResponseWriter, err error) {
+	if dbError, ok := err.(*pq.Error); ok {
+		log.Printf("there was a db error (%s): %s", dbError.Code, dbError)
+		switch dbError.Code.Name() {
+		case "foreign_key_violation", "unique_violation":
+			RespondErrorMessage(w, http.StatusBadRequest, err.Error())
+		default:
+			RespondError(w, err)
+		}
+		return
+	}
+
 }
