@@ -44,6 +44,7 @@ func main() {
 	router.Post(handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleAddFeed))
 	router.Get(handlers.FeedsPath, apiCfg.HandleGetFeeds)
 	router.Get(handlers.UsersPath+"/current"+handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleGetUserFeeds))
+	router.Get(handlers.FeedsPath+"/{id}/follow", apiCfg.MiddlewareAuth(apiCfg.HandleCreateFeedFollow))
 
 	server := &http.Server{
 		Handler: router,

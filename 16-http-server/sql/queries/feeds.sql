@@ -12,3 +12,8 @@ SELECT f.id, f.created_at, f.updated_at, f.name, f.url, f.user_id
 FROM feeds f
 LEFT JOIN feeds_follows ff ON f.user_id = ff.user_id
 WHERE ff.user_id = $1;
+
+-- name: CreateFeedFollow :one
+INSERT INTO feeds_follows (id, feed_id, user_id, created_at)
+VALUES ($1, $2, $3, $4)
+RETURNING *;

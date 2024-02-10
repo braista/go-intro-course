@@ -37,3 +37,12 @@ func DatabaseFeedsToFeeds(dbFeeds []database.Feed) []Feed {
 	}
 	return feeds
 }
+
+func DatabaseFeedFollowtoFeedFollow(dbFeedFollow database.FeedsFollow) FeedFollow {
+	return FeedFollow{
+		ID:        dbFeedFollow.ID,
+		FeedID:    dbFeedFollow.FeedID,
+		UserID:    dbFeedFollow.UserID,
+		CreatedAt: dbFeedFollow.CreatedAt,
+	}
+}

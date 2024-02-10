@@ -48,6 +48,36 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 	return i, err
 }
 
+const createFeedFollow = `-- name: CreateFeedFollow :one
+INSERT INTO feeds_follows (id, feed_id, user_id, created_at)
+VALUES ($1, $2, $3, $4)
+RETURNING id, user_id, feed_id, created_at
+`
+
+type CreateFeedFollowParams struct {
+	ID        uuid.UUID
+	FeedID    uuid.UUID
+	UserID    uuid.UUID
+	CreatedAt time.Time
+}
+
+func (q *Queries) CreateFeedFollow(ctx context.Context, arg CreateFeedFollowParams) (FeedsFollow, error) {
+	row := q.db.QueryRowContext(ctx, createFeedFollow,
+		arg.ID,
+		arg.FeedID,
+		arg.UserID,
+		arg.CreatedAt,
+	)
+	var i FeedsFollow
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.FeedID,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getFeeds = `-- name: GetFeeds :many
 SELECT id, created_at, updated_at, name, url, user_id 
 FROM feeds
