@@ -10,7 +10,7 @@ FROM feeds;
 -- name: GetUserFeeds :many
 SELECT f.id, f.created_at, f.updated_at, f.name, f.url, f.user_id
 FROM feeds f
-LEFT JOIN feeds_follows ff ON f.user_id = ff.user_id
+LEFT JOIN feeds_follows ff ON f.id = ff.feed_id
 WHERE ff.user_id = $1;
 
 -- name: CreateFeedFollow :one

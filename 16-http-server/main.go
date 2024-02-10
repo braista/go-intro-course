@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/braista/go-intro-course/16-http-server/handlers"
 	"github.com/braista/go-intro-course/16-http-server/internal/database"
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
@@ -24,7 +23,7 @@ func main() {
 		log.Fatal(err)
 	}
 	queries := database.New(connection)
-	apiCfg := handlers.ApiConfig{
+	apiCfg := apiConfig{
 		DB: queries,
 	}
 	// reading environment variables using os.Getenv()
@@ -33,18 +32,18 @@ func main() {
 
 	router := chi.NewRouter()
 	// health-check handler
-	router.Get("/healthz", handlers.HandleHealthCheck)
+	router.Get("/healthz", handleHealthCheck)
 	// users handler
-	router.Get(handlers.UsersPath, apiCfg.HandlerGetUsers)
-	router.Post(handlers.UsersPath, apiCfg.HandlerAddUser)
-	router.Get(handlers.UsersPath+"/current", apiCfg.MiddlewareAuth(apiCfg.HandleGetUser))
-	router.Patch(handlers.UsersPath+"/users/{id}", apiCfg.HandleUpdateUser)
-	router.Delete(handlers.UsersPath+"/users/{id}", apiCfg.HandlerDeleteUser)
+	router.Get(usersPath, apiCfg.handlerGetUsers)
+	router.Post(usersPath, apiCfg.handlerAddUser)
+	router.Get(usersPath+"/current", apiCfg.MiddlewareAuth(apiCfg.handleGetUser))
+	router.Patch(usersPath+"/users/{id}", apiCfg.handleUpdateUser)
+	router.Delete(usersPath+"/users/{id}", apiCfg.handlerDeleteUser)
 	//feeds handler
-	router.Post(handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleAddFeed))
-	router.Get(handlers.FeedsPath, apiCfg.HandleGetFeeds)
-	router.Get(handlers.UsersPath+"/current"+handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleGetUserFeeds))
-	router.Get(handlers.FeedsPath+"/{id}/follow", apiCfg.MiddlewareAuth(apiCfg.HandleCreateFeedFollow))
+	router.Post(feedsPath, apiCfg.MiddlewareAuth(apiCfg.handleAddFeed))
+	router.Get(feedsPath, apiCfg.handleGetFeeds)
+	router.Get(usersPath+"/current"+feedsPath, apiCfg.MiddlewareAuth(apiCfg.handleGetUserFeeds))
+	router.Get(feedsPath+"/{id}/follow", apiCfg.MiddlewareAuth(apiCfg.handleCreateFeedFollow))
 
 	server := &http.Server{
 		Handler: router,
@@ -54,4 +53,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+type apiConfig struct {
+	DB *database.Queries
 }

@@ -1,4 +1,4 @@
-package handlers
+package main
 
 import (
 	"encoding/json"
@@ -8,25 +8,24 @@ import (
 
 	"github.com/braista/go-intro-course/16-http-server/internal/database"
 	"github.com/braista/go-intro-course/16-http-server/models"
-	"github.com/braista/go-intro-course/16-http-server/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
 
-const FeedsPath string = "/feeds"
+const feedsPath string = "/feeds"
 
 type feedParameters struct {
 	Name string `json:"name"`
 	Url  string `json:"url"`
 }
 
-func (apiCfg *ApiConfig) HandleAddFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *apiConfig) handleAddFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	decoder := json.NewDecoder(r.Body)
 	params := feedParameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
-		utils.RespondError(w, err)
+		RespondError(w, err)
 		return
 	}
 	feed, err := apiCfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
@@ -38,36 +37,36 @@ func (apiCfg *ApiConfig) HandleAddFeed(w http.ResponseWriter, r *http.Request, u
 		UserID:    user.ID,
 	})
 	if err != nil {
-		utils.RespondDBError(w, err)
+		RespondDBError(w, err)
 		return
 	}
-	utils.RespondJSON(w, http.StatusCreated, models.DatabaseFeedToFeed(feed))
+	RespondJSON(w, http.StatusCreated, models.DatabaseFeedToFeed(feed))
 }
 
-func (apiCfg *ApiConfig) HandleGetFeeds(w http.ResponseWriter, r *http.Request) {
+func (apiCfg *apiConfig) handleGetFeeds(w http.ResponseWriter, r *http.Request) {
 	feeds, err := apiCfg.DB.GetFeeds(r.Context())
 	if err != nil {
-		utils.RespondDBError(w, err)
+		RespondDBError(w, err)
 		return
 	}
-	utils.RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
+	RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
 }
 
-func (apiCfg *ApiConfig) HandleGetUserFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *apiConfig) handleGetUserFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
 	feeds, err := apiCfg.DB.GetUserFeeds(r.Context(), user.ID)
 	if err != nil {
-		utils.RespondDBError(w, err)
+		RespondDBError(w, err)
 		return
 	}
-	utils.RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
+	RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
 }
 
-func (apiCfg *ApiConfig) HandleCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *apiConfig) handleCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedID := chi.URLParam(r, "id")
 	log.Printf("[%s] generating follow to feed '%s'", user.ID, feedID)
 	feedUUID, err := uuid.Parse(feedID)
 	if err != nil {
-		utils.RespondErrorMessage(w, http.StatusBadRequest, "feed uuid is invalid")
+		RespondErrorMessage(w, http.StatusBadRequest, "feed uuid is invalid")
 		return
 	}
 	feedFollow, err := apiCfg.DB.CreateFeedFollow(r.Context(), database.CreateFeedFollowParams{
@@ -79,18 +78,18 @@ func (apiCfg *ApiConfig) HandleCreateFeedFollow(w http.ResponseWriter, r *http.R
 	if dbError, ok := err.(*pq.Error); ok {
 		switch dbError.Constraint {
 		case "feeds_follows_feed_id_fkey":
-			utils.RespondErrorMessage(w, http.StatusBadRequest, "feed doesn't exist")
+			RespondErrorMessage(w, http.StatusBadRequest, "feed doesn't exist")
 		case "feeds_follows_user_id_feed_id_key":
-			utils.RespondErrorMessage(w, http.StatusBadRequest, "feed already followed")
+			RespondErrorMessage(w, http.StatusBadRequest, "feed already followed")
 		default:
-			utils.RespondError(w, err)
+			RespondError(w, err)
 		}
 		return
 	}
 	if err != nil {
-		utils.RespondError(w, err)
+		RespondError(w, err)
 		return
 	}
 	log.Printf("[%s] feed '%s' successfully followed", user.ID, feedID)
-	utils.RespondJSON(w, http.StatusCreated, models.DatabaseFeedFollowtoFeedFollow(feedFollow))
+	RespondJSON(w, http.StatusCreated, models.DatabaseFeedFollowtoFeedFollow(feedFollow))
 }
