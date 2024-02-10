@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -50,5 +51,8 @@ func RespondDBError(w http.ResponseWriter, err error) {
 		}
 		return
 	}
-
+	if err == sql.ErrNoRows {
+		RespondStatus(w, http.StatusNotFound)
+		return
+	}
 }

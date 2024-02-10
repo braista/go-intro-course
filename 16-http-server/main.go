@@ -43,6 +43,7 @@ func main() {
 	//feeds handler
 	router.Post(handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleAddFeed))
 	router.Get(handlers.FeedsPath, apiCfg.HandleGetFeeds)
+	router.Get(handlers.UsersPath+"/current"+handlers.FeedsPath, apiCfg.MiddlewareAuth(apiCfg.HandleGetUserFeeds))
 
 	server := &http.Server{
 		Handler: router,

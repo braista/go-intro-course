@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -19,8 +20,8 @@ func (cfg *ApiConfig) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 			return
 		}
 		user, err := cfg.DB.GetCurrentUser(r.Context(), apiKey)
-		if err != nil {
-			utils.RespondError(w, err)
+		if err != nil && err == sql.ErrNoRows {
+			utils.RespondStatus(w, http.StatusForbidden)
 			return
 		}
 		handler(w, r, user)

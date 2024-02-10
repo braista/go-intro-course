@@ -49,3 +49,12 @@ func (apiCfg *ApiConfig) HandleGetFeeds(w http.ResponseWriter, r *http.Request) 
 	}
 	utils.RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
 }
+
+func (apiCfg *ApiConfig) HandleGetUserFeeds(w http.ResponseWriter, r *http.Request, user database.User) {
+	feeds, err := apiCfg.DB.GetUserFeeds(r.Context(), user.ID)
+	if err != nil {
+		utils.RespondDBError(w, err)
+		return
+	}
+	utils.RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
+}
