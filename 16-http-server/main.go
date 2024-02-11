@@ -40,10 +40,10 @@ func main() {
 	router.Patch(usersPath+"/users/{id}", apiCfg.handleUpdateUser)
 	router.Delete(usersPath+"/users/{id}", apiCfg.handlerDeleteUser)
 	//feeds handler
-	router.Post(feedsPath, apiCfg.MiddlewareAuth(apiCfg.handleAddFeed))
+	router.Post(feedsPath, apiCfg.MiddlewareAuth(apiCfg.handleCreateFeed))
 	router.Get(feedsPath, apiCfg.handleGetFeeds)
 	router.Get(usersPath+"/current"+feedsPath, apiCfg.MiddlewareAuth(apiCfg.handleGetUserFeeds))
-	router.Get(feedsPath+"/{id}/follow", apiCfg.MiddlewareAuth(apiCfg.handleCreateFeedFollow))
+	router.Get(feedsPath+"/{id}/follow", apiCfg.MiddlewareAuth(apiCfg.handleFollowFeed))
 	router.Get(feedsPath+"/{id}/unfollow", apiCfg.MiddlewareAuth(apiCfg.HandleUnfollowFeed))
 
 	server := &http.Server{

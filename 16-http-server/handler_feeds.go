@@ -16,12 +16,20 @@ import (
 
 const feedsPath string = "/feeds"
 
+type FeedHandler interface {
+	handleCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) models.User
+	handleGetFeeds(w http.ResponseWriter, r *http.Request) []models.User
+	handleGetUserFeeds(w http.ResponseWriter, r *http.Request, user database.User) []models.Feed
+	handleFollowFeed(w http.ResponseWriter, r *http.Request, user database.User) models.FeedFollow
+	HandleUnfollowFeed(w http.ResponseWriter, r *http.Request, user database.User) models.FeedFollow
+}
+
 type feedParameters struct {
 	Name string `json:"name"`
 	Url  string `json:"url"`
 }
 
-func (apiCfg *apiConfig) handleAddFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *apiConfig) handleCreateFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	decoder := json.NewDecoder(r.Body)
 	params := feedParameters{}
 	err := decoder.Decode(&params)
@@ -62,7 +70,7 @@ func (apiCfg *apiConfig) handleGetUserFeeds(w http.ResponseWriter, r *http.Reque
 	RespondJSON(w, http.StatusOK, models.DatabaseFeedsToFeeds(feeds))
 }
 
-func (apiCfg *apiConfig) handleCreateFeedFollow(w http.ResponseWriter, r *http.Request, user database.User) {
+func (apiCfg *apiConfig) handleFollowFeed(w http.ResponseWriter, r *http.Request, user database.User) {
 	feedID := chi.URLParam(r, "id")
 	log.Printf("[%s] generating follow to feed '%s'", user.ID, feedID)
 	feedUUID, err := uuid.Parse(feedID)
