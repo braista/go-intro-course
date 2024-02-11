@@ -17,3 +17,9 @@ WHERE ff.user_id = $1;
 INSERT INTO feeds_follows (id, feed_id, user_id, created_at)
 VALUES ($1, $2, $3, $4)
 RETURNING *;
+
+-- name: DeleteFeedFollow :one
+DELETE 
+FROM feeds_follows
+WHERE feed_id = $1 AND user_id = $2
+RETURNING *;

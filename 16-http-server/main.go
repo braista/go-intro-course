@@ -44,6 +44,7 @@ func main() {
 	router.Get(feedsPath, apiCfg.handleGetFeeds)
 	router.Get(usersPath+"/current"+feedsPath, apiCfg.MiddlewareAuth(apiCfg.handleGetUserFeeds))
 	router.Get(feedsPath+"/{id}/follow", apiCfg.MiddlewareAuth(apiCfg.handleCreateFeedFollow))
+	router.Get(feedsPath+"/{id}/unfollow", apiCfg.MiddlewareAuth(apiCfg.HandleUnfollowFeed))
 
 	server := &http.Server{
 		Handler: router,

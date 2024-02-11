@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -92,4 +93,37 @@ func (apiCfg *apiConfig) handleCreateFeedFollow(w http.ResponseWriter, r *http.R
 	}
 	log.Printf("[%s] feed '%s' successfully followed", user.ID, feedID)
 	RespondJSON(w, http.StatusCreated, models.DatabaseFeedFollowtoFeedFollow(feedFollow))
+}
+
+func (apiCfg *apiConfig) HandleUnfollowFeed(w http.ResponseWriter, r *http.Request, user database.User) {
+	feedID := chi.URLParam(r, "id")
+	feedUUID, err := uuid.Parse(feedID)
+	if err != nil {
+		RespondErrorMessage(w, http.StatusBadRequest, "feed uuid is invalid")
+		return
+	}
+	feed, err := apiCfg.DB.DeleteFeedFollow(r.Context(), database.DeleteFeedFollowParams{
+		FeedID: feedUUID,
+		UserID: user.ID,
+	})
+	if dbError, ok := err.(*pq.Error); ok {
+		log.Println("wut: " + dbError.Constraint)
+		switch dbError.Constraint {
+		case "feeds_follows_feed_id_fkey":
+			RespondErrorMessage(w, http.StatusBadRequest, "feed doesn't exist")
+		default:
+			RespondError(w, err)
+		}
+		return
+	}
+	if err == sql.ErrNoRows {
+		RespondErrorMessage(w, http.StatusBadRequest, "feed not followed")
+		return
+	}
+	if err != nil {
+		RespondError(w, err)
+		return
+	}
+	log.Printf("[%s] feed '%s' successfully unfollowed", user.ID, feedID)
+	RespondJSON(w, http.StatusOK, feed)
 }
